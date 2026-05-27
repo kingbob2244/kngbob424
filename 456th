@@ -36,7 +36,7 @@ local ThemeManager = {} do
 	ThemeManager.Folder = 'LinoriaLibSettings'
 
 	ThemeManager.Library = nil
-	ThemeManager.DefaultTheme = 'Tokyo Night'
+	ThemeManager.DefaultTheme = 'hwz'  
 	ThemeManager.BuiltInThemes = {
 		['Mint'] 			= { 1, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"242424","AccentColor":"3db488","BackgroundColor":"1c1c1c","OutlineColor":"373737"}') },
 		['Default'] 		= { 2, httpService:JSONDecode('{"FontColor":"ffffff","MainColor":"1c1c1c","AccentColor":"0055ff","BackgroundColor":"141414","OutlineColor":"323232"}') },
@@ -52,10 +52,11 @@ local ThemeManager = {} do
 	ThemeManager.ForceTheme = function(self)
 		if not self.Library then return end
 		
-		self.Library.BackgroundColor = Color3.fromHex("#16161f")
-		self.Library.MainColor = Color3.fromHex("#191925")
-		self.Library.AccentColor = Color3.fromHex("#6759b3")
-		self.Library.OutlineColor = Color3.fromHex("#323232")
+		-- Set colors to match the 'hwz' theme (red and gray)
+		self.Library.BackgroundColor = Color3.fromHex("#1e1e1e")
+		self.Library.MainColor = Color3.fromHex("#2a2a2a")
+		self.Library.AccentColor = Color3.fromHex("#ff3333")
+		self.Library.OutlineColor = Color3.fromHex("#3a3a3a")
 		self.Library.FontColor = Color3.fromHex("#ffffff")
 		
 		self.Library.AccentColorDark = self.Library:GetDarkerColor(self.Library.AccentColor)
@@ -64,10 +65,10 @@ local ThemeManager = {} do
 		
 		if self.Library.Options then
 			local options = {
-				BackgroundColor = Color3.fromHex("#16161f"),
-				MainColor = Color3.fromHex("#191925"),
-				AccentColor = Color3.fromHex("#6759b3"),
-				OutlineColor = Color3.fromHex("#323232"),
+				BackgroundColor = Color3.fromHex("#1e1e1e"),
+				MainColor = Color3.fromHex("#2a2a2a"),
+				AccentColor = Color3.fromHex("#ff3333"),
+				OutlineColor = Color3.fromHex("#3a3a3a"),
 				FontColor = Color3.fromHex("#ffffff")
 			}
 			
@@ -78,7 +79,7 @@ local ThemeManager = {} do
 			end
 			
 			if self.Library.Options.ThemeManager_ThemeList then
-				self.Library.Options.ThemeManager_ThemeList:SetValue("Tokyo Night")
+				self.Library.Options.ThemeManager_ThemeList:SetValue(self.DefaultTheme)
 			end
 		end
 	end
@@ -133,7 +134,7 @@ local ThemeManager = {} do
 	end
 
 	function ThemeManager:LoadDefault()
-		local theme = "Tokyo Night"
+		local theme = self.DefaultTheme  -- Use the default theme (hwz)
 		if self.Library.Options.ThemeManager_ThemeList then
 			self.Library.Options.ThemeManager_ThemeList:SetValue(theme)
 		end
@@ -141,10 +142,10 @@ local ThemeManager = {} do
 	end
 
 	function ThemeManager:CreateThemeManager(groupbox)
-		groupbox:AddLabel('Background color'):AddColorPicker('BackgroundColor', { Default = Color3.fromHex("#16161f") });
-		groupbox:AddLabel('Main color'):AddColorPicker('MainColor', { Default = Color3.fromHex("#191925") });
-		groupbox:AddLabel('Accent color'):AddColorPicker('AccentColor', { Default = Color3.fromHex("#6759b3") });
-		groupbox:AddLabel('Outline color'):AddColorPicker('OutlineColor', { Default = Color3.fromHex("#323232") });
+		groupbox:AddLabel('Background color'):AddColorPicker('BackgroundColor', { Default = Color3.fromHex("#1e1e1e") });
+		groupbox:AddLabel('Main color'):AddColorPicker('MainColor', { Default = Color3.fromHex("#2a2a2a") });
+		groupbox:AddLabel('Accent color'):AddColorPicker('AccentColor', { Default = Color3.fromHex("#ff3333") });
+		groupbox:AddLabel('Outline color'):AddColorPicker('OutlineColor', { Default = Color3.fromHex("#3a3a3a") });
 		groupbox:AddLabel('Font color'):AddColorPicker('FontColor', { Default = Color3.fromHex("#ffffff") });
 
 		local ThemesArray = {}
@@ -154,9 +155,18 @@ local ThemeManager = {} do
 
 		table.sort(ThemesArray, function(a, b) return self.BuiltInThemes[a][1] < self.BuiltInThemes[b][1] end)
 
+		-- Find the default index based on DefaultTheme
+		local defaultIndex = 1
+		for i, themeName in ipairs(ThemesArray) do
+			if themeName == self.DefaultTheme then
+				defaultIndex = i
+				break
+			end
+		end
+
 		groupbox:AddDivider()
 
-		groupbox:AddDropdown('ThemeManager_ThemeList', { Text = 'Theme list', Values = ThemesArray, Default = 6 })
+		groupbox:AddDropdown('ThemeManager_ThemeList', { Text = 'Theme list', Values = ThemesArray, Default = defaultIndex })
 		groupbox:AddButton('Set as default', function()
 			self.Library:Notify(string.format('Set default theme to %q', self.Library.Options.ThemeManager_ThemeList.Value))
 		end)
